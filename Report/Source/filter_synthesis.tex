@@ -1,0 +1,8 @@
+\section{Filter Synthesis}
+
+Once creating every filter with its own configuration, each HDL file has to be synthesized and/or implemented in order to compare each architecture.
+For this process, Xilinx Vivado seems to be the best option to use as other great EDA tools like Synopsys and Cadence suites weren't available. Since I'm using Vivado, I should as well target an FPGA that might have access such as the \href{https://www.xilinx.com/products/boards-and-kits/1-8dyf-11.html}{Zedboard}. Zedboard isn't a very big FPGA in terms of memory size, but, hopefully, it might be able to implement some filters at the end.
+
+\subsection{Importing MATLAB HDL files}
+In Vivado, a new project is created for each filter architecture. Files are imported using the standard GUI procedure while also adding constraints for the target device mentioned above.
+MATLAB produces source HDL and test-bench for each filter created.

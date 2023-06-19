@@ -1,0 +1,70 @@
+% !TeX spellcheck = en_US
+% !TEX encoding = UTF-8 Unicode
+\documentclass[12pt,a4paper, twocolumn]{article}
+\usepackage[T1]{fontenc}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[left=1.50cm, right=1.50cm, top=1.50cm, bottom=1.50cm, includeheadfoot]{geometry}
+\usepackage{subfigure}
+\usepackage{wrapfig}
+\usepackage{mathtools}
+\usepackage[nottoc, numbib]{tocbibind}
+\usepackage{tabularray}
+
+% \setmainfont{Verdana}
+
+\newcommand{\Mnewline}{\\[0.2cm]}
+
+\usepackage[pdfauthor={Nikos Stylianou},
+pdftitle={Semester Project},
+pdfcreator={TeX},
+pdfsubject={ECE 494 - Processor Design}]{hyperref}
+
+\hypersetup{
+	colorlinks,
+	citecolor=blue,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=blue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{ECE 494 - Processor Design}
+\fancyfoot[R]{Page \thepage \hspace{1pt} of \pageref*{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}% Line at the footer visible
+
+\fancypagestyle{first_page}{
+\fancyhf{}
+\fancyfoot[R]{Page \thepage \hspace{1pt} of \pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+}
+
+\title{\vspace{-0.5cm}Semester Project \Mnewline \normalsize{Architectural exploration of low-pass FIR filters using MATLAB HDL Coder}}
+\author{Student: Nikos Stylianou \Mnewline
+	ΑΕΜ: 2917 \Mnewline
+	Course: ECE 494 - Processor Design \Mnewline
+	\includegraphics[scale=0.25]{Images/uth-logo.png}}
+\date{\today \vspace{2cm}}
+
+\begin{document}
+	
+\maketitle
+\thispagestyle{first_page}
+\vspace{3cm}
+	
+\tableofcontents
+
+\newpage
+
+% \input ta pages poy 8a graftoyn
+\input{Source/introduction}
+\input{Source/creating_filter}
+\input{Source/filter_synthesis}
+	
+\end{document}
