@@ -1,2 +1,4 @@
 # Remove every Vivado Generated file
 Vivado_Files/*
+*synctex.gz
+*.asv
