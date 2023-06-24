@@ -5,4 +5,15 @@ For this process, Xilinx Vivado seems to be the best option to use as other grea
 
 \subsection{Importing MATLAB HDL files}
 In Vivado, a new project is created for each filter architecture. Files are imported using the standard GUI procedure while also adding constraints for the target device mentioned above.
-MATLAB produces source HDL and test-bench for each filter created.
+MATLAB produces source HDL and test-bench for each filter created as well as some \verb|.do| files that tell Xilinx's compiler what to do.
+
+\subsection{Synthesis in Vivado}
+After importing all necessary files into Vivado, we must assure the functionality of the exported circuit.
+First we set the target device, which as said before is the \textit{Zedboard}, the target clock ($\approx10$ ns) and then simulation starts with the included simulator, \emph{vsim}.
+Also, MATLAB streamlines this process by adding some specific tests inside testbenches, to lighten designer's workload.
+After functionality is ensured, synthesis takes place where utilization of LUTs (\textit{Look Up Tables}), flip-flops and of other critical components is measured.
+So, this will be the way of comparing all architectures.
+
+In order to get more accurate results, \emph{constraints} for the target chip must be set-up. Those include mostly timing constraints that help Vivado predict the circuit's power consumption and whether it passes/fails the timing checks.
+
+Finally, each project gets implemented to check if the systems meets the timing criteria introduced in the step before. After implementation is achieved, we start to compare each result and from an opinion about each architecture presented.
