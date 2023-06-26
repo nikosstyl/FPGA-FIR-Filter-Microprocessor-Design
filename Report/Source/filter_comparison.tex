@@ -2,6 +2,15 @@
 
 \section{Filter Comparison}
 
+\subsection{Architectural differences}
+The main difference of each pack of filters is the architecture itself.
+Using a standard multiplier, the filter coefficients are multiplied with the input samples using multipliers. The output is obtained by summing the products of the coefficients and input samples. This architecture is straightforward and produces accurate results but can be resource-intensive in terms of hardware implementation.
+
+The second implementation is by using factored CSD., This is a technique used to reduce the number of partial products required for multiplication by decomposing the coefficients into a sum of powers of two. This architecture employs a combination of shifters and adders to implement the multiplication operation. The output is obtained by accumulating the partial products. Factored CSD reduces hardware complexity and power consumption compared to the multiplier architecture, but it may introduce some additional round-off errors due to approximation.
+
+The last architecture used in this project is called Distributed Arithmetic (\emph{DA}).
+Distributed arithmetic is another technique for efficient multiplication using look-up tables (LUTs). In this architecture, the filter coefficients are precomputed and stored in a LUT. The input samples are used as indices to retrieve the corresponding precomputed values from the LUT. These values are then summed to obtain the filter output. Distributed arithmetic offers advantages in terms of reduced hardware complexity and power consumption but can introduce quantization errors due to the finite precision of the LUT.
+
 \subsection{Minimum Order filter}
 Beginning with the minimum order one using floating point precision (\textit{32 bits}), we can observe that the circuit created cannot fit inside the target FPGA.
 
