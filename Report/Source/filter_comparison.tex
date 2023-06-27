@@ -17,11 +17,11 @@ The factored CSD and distributed arithmetic architectures offer trade-offs by re
 \subsection{Minimum Order filter}
 Beginning with the minimum order one using floating point precision (\textit{32 bits}), we can observe that the created circuit can barely fit inside the target FPGA. As we can see from the figure~\ref{fig:fir_min_dsp_util}, DSP utilization is at $100\%$ and drops almost linearly with the decrease of bits used in computation. Note that, DSP utilization is $0\%$ when using 8 bits arithmetic because of the compiler being able to do every computation using LUTs and flip-flops.
 
-The same pattern can be observed in the 2-stage multiplier architecture as the number of computations didn't decrease. Increasing pipeline stages from one to two, theoretically, increases operations per cycle but it didn't have the same impact on execution time. From the table~\ref{table:multiplier_stages_time}, we can see that execution time of 1-stage pipeline is faster than 2-stage pipeline by $20\hspace{3pt}ns$. This decrease in execution time is due to several overheads from the second pipeline stage. But, from the increase of those stages, efficiency can be increased by dropping operating frequency while doing the same amount of computations in the same time.
+The same pattern can be observed in the 2-stage multiplier architecture as the number of computations didn't decrease. Increasing pipeline stages from one to two, theoretically, increases operations per cycle but it didn't have the same impact on execution time. From the table~\ref{table:multiplier_stages_time}, we can see that execution time of 1-stage pipeline is faster than 2-stage pipeline by $20\hspace{3pt}ns$. This decrease in execution time is due to several overheads from the second pipeline stage but the increase of those stages can increase efficiency by dropping operating frequency while doing the same amount of computations in the same time (\textit{because of the reduced slack}).
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.5\textwidth]{../Images/FIR_min_Order/multiplier_1_pipeline/dsp_util.png}
+	\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/multiplier_1_pipeline/dsp_util.png}
 	\caption{DSP utilization for min. order filter for different bits}
 	\label{fig:fir_min_dsp_util}
 \end{figure}
@@ -40,6 +40,26 @@ The same pattern can be observed in the 2-stage multiplier architecture as the n
 \caption{Time for different multiplier pipeline stages using 32 bit floating point arithmetic.}
 \label{table:multiplier_stages_time}
 \end{table}
+
+Knowing the latency of each architecture, we can calculate the overall execution time for a specific sample set. MATLAB's sample set consists of $3499$ samples. So, using the following formula, we can calculate each architecture's execution time.
+\begin{small}
+\begin{equation}
+	\centering
+	\begin{split}
+		Execution\hspace{3pt} time &= \\
+		& \hspace{-55pt} =\frac{{Latency \hspace{3pt} per \hspace{3pt} sample}\cdot{Number \hspace{3pt} of \hspace{3pt} Samples}}{{Clock \hspace{3pt} frequency}}
+	\end{split}
+\end{equation}
+\end{small}
+By inserting numbers in the formula above, we get the diagram that is displayed in fig~\ref{fig:exec_time_latency_min_32}. Clearly, execution time follows the 
+
+\begin{figure}[htpb]
+	\centering
+	\subfigure[HDL latency for different architectures in samples.]{\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/hdl_latency_32bits.png}}\\
+	\subfigure[Execution time for different architectures in nanoseconds.]{\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/exec_time_32bits.png}}
+	\caption{Latency and execution time for different architectures.\\ \textit{Note: This is for 32bit arithmetic, the same pattern is observed for the other arithmetics.}}
+	\label{fig:exec_time_latency_min_32}
+\end{figure}
 
 \subsection{20 Order filter}
 
