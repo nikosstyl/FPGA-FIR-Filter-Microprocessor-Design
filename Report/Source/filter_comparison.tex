@@ -104,7 +104,53 @@ Finally, while the distributed arithmetic architecture seems to be the most quic
 Those approximations introduce errors that are more significant from those introduced in factored CSD architecture since those errors accumulate throughout the computation stages. Each stage involves a lookup operation and subsequent accumulation of values thus its impact is bigger on overall system accuracy.
 
 \subsection{20 Order filter}
-Moving to a filter which uses more coefficients for filtering, things start to distinguish in the filter architecture field.
+Moving to a filter which uses more coefficients, things start to distinguish in the filter architecture field.
 
+Starting with execution times in figure~\ref{fig:fir_20_hdl_latency}, we can clearly see the same pattern occurred in the previous filter. Both sample latency and execution times have almost the same gradients and this is normal, as the only thing changing is the operations per sample (\textit{increased to 41 from 7 in min. \hspace{-10pt} order filter}). As we change architectures from multiplier to multiplier-less (\textit{either f-CSD or DA}), the number of operations per sample increase but multiplication is not taking place. Those operations are generally additions which are more cheap to implement (\textit{mainly implemented using LUTs}).
+
+Utilization also increased, since more computations are executed in one sample cycle.
+The filter order directly corresponds to the number of filter taps or coefficients used in the design. As the filter order increases, more taps are required to achieve the desired frequency response and filtering characteristics.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../Images/FIR_20_Order/hdl_latency.png}
+	\caption{Latency per sample for different architectures.}
+	\label{fig:fir_20_hdl_latency}
+\end{figure}
+
+As far as SNR values are concerned, there is an improvement over the previous filter in both consistency and magnitude of numbers. Beginning with multiplier architectures, we observe a solid $\approx 38 \hspace{3pt} dB$ value for both 32 and 24 bits with steadily decreasing values for 16 and 8 bits arithmetic width ($\approx 34 \hspace{3pt} dB$).
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.45\textwidth]{../Images/FIR_20_Order/snr_values.png}
+	\caption{SNR values of 20 order filter for different arithmetics.}
+	\label{fig:fir_20_snr}
+\end{figure}
 
 \subsection{30 Order filter}
+
+\subsection{Overall utilizations}
+\begin{figure*}[h]
+	\centering
+	\subfigure[FF utilization of min order filter]{
+		\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/ff_utilization.png}
+	}
+	\subfigure[LUT utilization of min order filter]{
+		\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/lut_utilization.png}
+	}
+	\subfigure[FF utilization of 20 order filter]{
+		\includegraphics[width=0.45\textwidth]{../Images/FIR_20_Order/ff_utilization.png}
+	}
+	\subfigure[LUT utilization of 20 order filter]{
+		\includegraphics[width=0.45\textwidth]{../Images/FIR_20_Order/lut_utilization.png}
+	}
+	\subfigure[FF utilization of 30 order filter]{
+		\includegraphics[width=0.45\textwidth]{../Images/FIR_30_Order/ff_utilization.png}
+	}
+	\subfigure[LUT utilization of min order filter]{
+		\includegraphics[width=0.45\textwidth]{../Images/FIR_30_Order/lut_utilization.png}
+	}
+	\caption{Various utilizations of LUTs and flip-flops for different architectures.}
+	\label{fig:lut_ff_util_all}
+\end{figure*}
+
