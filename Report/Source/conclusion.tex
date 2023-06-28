@@ -1,0 +1,15 @@
+% !TeX spellcheck = en_US
+
+\section{Conclusion}
+In conclusion, the architectural differences of the low-pass filter created have been explored in this project.
+The 1-stage pipeline multiplier architecture provides a balanced trade-off between complexity and performance. It efficiently processes the input samples in a single pipeline stage, making it suitable for real-time applications where low latency is desired. However, it may require a higher clock frequency to achieve the desired throughput.
+
+The 2-stage pipeline multiplier architecture offers improved performance by dividing the filtering process into two pipeline stages. This allows for better resource utilization and can potentially operate at a lower clock frequency compared to the 1-stage architecture. The 2-stage pipeline multiplier architecture is particularly beneficial when designing filters with a higher order or when implementing resource-constrained systems.
+
+The multiplier-less architecture using factored CSD provides an alternative approach to implementing the low-pass FIR filter. By utilizing CSD coefficients, this architecture eliminates the need for dedicated multipliers, reducing the overall complexity and resource utilization. This approach can be advantageous in applications where hardware resources are limited or power efficiency is a primary concern.
+
+The distributed arithmetic architecture leverages precomputed partial products to perform efficient multiplication operations. It exploits the distributive property of arithmetic operations to minimize the required hardware resources. This architecture is well-suited for implementing low-pass FIR filters with reduced hardware complexity, particularly in applications where area optimization is crucial.
+
+Regarding the bit width configurations, the use of single-precision (32 bits) provides the highest level of precision and dynamic range. However, it comes at the cost of increased computational and memory requirements. Fixed-point representations with lower bit widths, such as 24 bits, 16 bits, and 8 bits, reduce the required resources but introduce quantization effects and potential loss of precision. The appropriate bit width should be selected based on the specific application requirements, considering the trade-off between accuracy and resource constraints.
+
+In conclusion, the architectural differences and bit width configurations of the low-pass FIR filter have a significant impact on its performance, resource utilization, and precision. The choice of architecture and bit width should be carefully considered based on the specific application's requirements, constraints, and trade-offs between accuracy, complexity, power consumption, and resource utilization.

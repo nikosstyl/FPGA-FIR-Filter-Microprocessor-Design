@@ -7,7 +7,7 @@
 The main difference of each pack of filters is the architecture itself.
 Using a standard multiplier, the filter coefficients are multiplied with the input samples using multipliers. The output is obtained by summing the products of the coefficients and input samples. This architecture is straightforward and produces accurate results but can be resource-intensive in terms of hardware implementation.
 
-The second implementation is by using factored CSD., This is a technique used to reduce the number of partial products required for multiplication by decomposing the coefficients into a sum of powers of two. This architecture employs a combination of shifters and adders to implement the multiplication operation. The output is obtained by accumulating the partial products. Factored CSD reduces hardware complexity and power consumption compared to the multiplier architecture, but it may introduce some additional round-off errors due to approximation.
+The second implementation is by using factored CSD. This is a technique used to reduce the number of partial products required for multiplication by decomposing the coefficients into a sum of powers of two. This architecture employs a combination of shifters and adders to implement the multiplication operation. The output is obtained by accumulating the partial products. Factored CSD reduces hardware complexity and power consumption compared to the multiplier architecture, but it may introduce some additional round-off errors due to approximation.
 
 The last architecture used in this project is called Distributed Arithmetic (\emph{DA}).
 Distributed arithmetic is another technique for efficient multiplication using look-up tables (LUTs). In this architecture, the filter coefficients are precomputed and stored in a LUT. The input samples are used as indices to retrieve the corresponding precomputed values from the LUT. These values are then summed to obtain the filter output. Distributed arithmetic offers advantages in terms of reduced hardware complexity and power consumption but can introduce quantization errors due to the finite precision of the LUT.
@@ -103,10 +103,10 @@ This trend is followed for every bit width and is caused by the "bad" filter cap
 Finally, while the distributed arithmetic architecture seems to be the most quick of all above architectures as viewed in figure~\ref{fig:exec_time_min_32b} for a specific arithmetic bit width and appears to be the most efficient of all (since LUT and flip flop utilizations are smaller than that of other architectures), it clearly isn't the correct one. This is the cost of every approximation technique applied by the architecture.
 Those approximations introduce errors that are more significant from those introduced in factored CSD architecture since those errors accumulate throughout the computation stages. Each stage involves a lookup operation and subsequent accumulation of values thus its impact is bigger on overall system accuracy.
 
-\subsection{20 Order filter}
-Moving to a filter which uses more coefficients, things start to distinguish in the filter architecture field.
+\subsection{20$^{th}$ Order filter}
+Moving to a filter which uses more coefficients, filtering capabilities are becoming much better.
 
-Starting with execution times in figure~\ref{fig:fir_20_hdl_latency}, we can clearly see the same pattern occurred in the previous filter. Both sample latency and execution times have almost the same gradients and this is normal, as the only thing changing is the operations per sample (\textit{increased to 41 from 7 in min. \hspace{-10pt} order filter}). As we change architectures from multiplier to multiplier-less (\textit{either f-CSD or DA}), the number of operations per sample increase but multiplication is not taking place. Those operations are generally additions which are more cheap to implement (\textit{mainly implemented using LUTs}).
+Starting with execution times in figure~\ref{fig:fir_20_hdl_latency}, we can clearly see the same pattern occurred in the previous filter. Both sample latency and execution times have almost the same gradients and this is normal, as the only thing changing is the operations per sample (\textit{increased to 41 from 7 in min. \hspace{-10pt} order filter}). As we change architectures from multiplier to multiplier-less (\textit{either f-CSD or DA}), the number of operations per sample increase but multiplication is not taking place. These operations are generally additions which are more cheap to implement (\textit{mainly implemented using LUTs}).
 
 Utilization also increased, since more computations are executed in one sample cycle.
 The filter order directly corresponds to the number of filter taps or coefficients used in the design. As the filter order increases, more taps are required to achieve the desired frequency response and filtering characteristics.
@@ -127,9 +127,28 @@ As far as SNR values are concerned, there is an improvement over the previous fi
 	\label{fig:fir_20_snr}
 \end{figure}
 
-\subsection{30 Order filter}
+\subsection{30$^{th}$ Order filter}
+The 30$^{th}$ order filter is itself a better representation of the 20$^{th}$ order one.
+Once again, increasing the order of a filter raises the number of operations due to the increased complexity of the filter structure.
+The order of a filter refers to the number of filter taps or coefficients used in the design, which directly affects the number of mathematical operations required to process the input signal, thus increasing the overall utilization further across every architecture.
+
+Being a higher order, the filter has a narrower transition band and steeper roll-off characteristics, enabling it to suppress unwanted noise more effectively. This can result in an improved SNR, as the filter can better separate the desired signal from the noise. The above theory can indeed be observed in figure~\ref{fig:fir_30_snr}.
+
+SNR magnitude for multiplier architectures lies around $\approx 42 \hspace{3pt} dB$ while it is reduced for the non-multiplier (\emph{approximation}) architectures. For relatively large bit-width (\emph{32, 24 bits}), all architectures have almost the same SNR value except dsitributed arithmetic's value which is $\approx8 \hspace{3pt} dB$ smaller everywhere. While transitioning to the lowest bit width arithmetics (\emph{16, 8 bits}), the approximation trade-offs start to appear a bit clearer.
+Both factored-CSD and distributed arithmetic have significantly smaller SNR number for those bit-widths compared with multiplier ones, but at the same time they require less hardware to operate as fig.~\ref{fig:lut_ff_util_all} indicate.
+
+As far as performance is concerned, this filter has the same latency per sample as the 20$^{th}$ one, thus having the same execution time for the same sample set. This happens because the number of operations has increased to a point where the calculations can be completed within the same time as the 20$^{th}$ order one.
+
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../Images/FIR_30_Order/snr_values.png}
+	\caption{SNR values of 30$^{th}$ order filter.}
+	\label{fig:fir_30_snr}
+\end{figure}
 
 \subsection{Overall utilizations}
+Overall utilizations can be observed in figure complex~\ref{fig:lut_ff_util_all}.
 \begin{figure*}[h]
 	\centering
 	\subfigure[FF utilization of min order filter]{
