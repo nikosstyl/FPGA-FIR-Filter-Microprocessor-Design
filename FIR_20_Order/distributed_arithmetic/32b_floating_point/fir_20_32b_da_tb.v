@@ -28,7 +28,7 @@
 `timescale 1 ns / 1 ns 
 
 module fir_20_32b_da_tb;
-
+	integer write_filter_out;
 // Function definitions
    function signed [68:0] abs;
    input signed [68:0] arg;
@@ -118,7 +118,8 @@ module fir_20_32b_da_tb;
 // **************************************
  initial //Input & Output data
  begin
-
+write_filter_out = $fopen("fir_20_32b_da_out.txt", "w");
+ $fdisplay(write_filter_out, "Filter_out, Filter_out_expected");
  // Input data for filter_in_data_log
  filter_in_data_log_force[   0] <= 32'h00000001;
  filter_in_data_log_force[   1] <= 32'h00000000;
@@ -6660,6 +6661,7 @@ module fir_20_32b_da_tb;
       # clk_high;
       clk <= 1'b0;
       # clk_low;
+	  $fclose(write_filter_out);
       $stop;
     end
   end  // clk_gen
@@ -6955,6 +6957,7 @@ module fir_20_32b_da_tb;
 
       end
     end
+	$fdisplay(write_filter_out, "%d, %d", filter_out, filter_out_expected[filter_out_addr]);
   end // checker_filter_out
 
   always @ (posedge clk or posedge reset) // checkDone_1

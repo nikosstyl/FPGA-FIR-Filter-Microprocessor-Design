@@ -3,6 +3,7 @@
 \section{Filter Comparison}
 
 \subsection{Architectural differences}
+\label{sec:filter_comp_subsec:architectural_diff}
 The main difference of each pack of filters is the architecture itself.
 Using a standard multiplier, the filter coefficients are multiplied with the input samples using multipliers. The output is obtained by summing the products of the coefficients and input samples. This architecture is straightforward and produces accurate results but can be resource-intensive in terms of hardware implementation.
 
@@ -15,31 +16,40 @@ So, when comparing these architectures, we can expect the multiplier architectur
 The factored CSD and distributed arithmetic architectures offer trade-offs by reducing hardware requirements and power consumption while introducing minor approximations that result in slight differences in the output.
 
 \subsection{Minimum Order filter}
-Beginning with the minimum order one using floating point precision (\textit{32 bits}), we can observe that the created circuit can barely fit inside the target FPGA. As we can see from the figure~\ref{fig:fir_min_dsp_util}, DSP utilization is at $100\%$ and drops almost linearly with the decrease of bits used in computation. Note that, DSP utilization is $0\%$ when using 8 bits arithmetic because of the compiler being able to do every computation needed using LUTs and flip-flops.
+Beginning with the minimum order one, overall utilization is fairly low due to the low number of coefficients used. From MATLAB, the minimum coeff.\hspace{-3pt} number that was able to produce an \verb|FIR| filter of those specifications was \textbf{3}.
+Creating a filter with such low number of coefficients does not have a great filtering capability as can be seen from figure~\ref{fig:min_order_filt}.
 
-The same pattern can be observed in the 2-stage multiplier architecture as the number of computations didn't decrease. Increasing pipeline stages from one to two, theoretically, increases operations per cycle but it didn't have the same impact on execution time. From table~\ref{table:multiplier_stages_time}, we can see that execution time of 1-stage pipeline is faster than 2-stage pipeline by $20\hspace{3pt}ns$. This decrease in execution time is due to several overheads from the second pipeline stage but the increase of those stages can increase efficiency by dropping operating frequency while doing the same amount of computations in the same time (\textit{because of the reduced slack}).
-
-\begin{figure}[htbp]
+\begin{wrapfigure}{R}{0.25\textwidth}
 	\centering
-	\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/multiplier_1_pipeline/dsp_util.png}
-	\caption{DSP utilization for min. order filter (\textit{multiplier 1-stage}) using different bits}
-	\label{fig:fir_min_dsp_util}
-\end{figure}
+	\includegraphics[width=0.25\textwidth]{../Images/FIR_min_Order/min_order_filt.png}
+	\caption{Magnitude response of the FIR filter with minimum number of coefficients.}
+	\label{fig:min_order_filt}
+\end{wrapfigure}
 
-\begin{table}[htbp]
-\centering
-\begin{tblr}{|c|c|}
-	\hline
-	Architecture & Time \\
-	\hline
-	{Multiplier 1-stage pipeline} & 35140 ns\\
-	\hline
-	{Multiplier 2-stage pipeline} & 35160 ns\\
-	\hline
-\end{tblr}
-\caption{Time for different multiplier pipeline stages using 32 bit floating point arithmetic.}
-\label{table:multiplier_stages_time}
-\end{table}
+Increasing pipeline stages from one to two, theoretically, increases operations per cycle but it didn't have the same impact on execution time.
+From figure~\ref{fig:exec_time_min_32b}, we can see that execution time of 1-stage pipeline is faster than 2-stage pipeline by a significant margin. This decrease in execution time is due to several overheads from the second pipeline stage but the increase of those stages can increase efficiency by dropping operating frequency while doing the same amount of computations in the same time (\textit{because of the reduced slack}).
+
+%\begin{figure}[htbp]
+%	\centering
+%	\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/multiplier_1_pipeline/dsp_util.png}
+%	\caption{DSP utilization for min. order filter (\textit{multiplier 1-stage}) using different bits}
+%	\label{fig:fir_min_dsp_util}
+%\end{figure}
+%
+%\begin{table}[htbp]
+%\centering
+%\begin{tblr}{|c|c|}
+%	\hline
+%	Architecture & Time \\
+%	\hline
+%	{Multiplier 1-stage pipeline} & 35140 ns\\
+%	\hline
+%	{Multiplier 2-stage pipeline} & 35160 ns\\
+%	\hline
+%\end{tblr}
+%\caption{Time for different multiplier pipeline stages using 32 bit floating point arithmetic.}
+%\label{table:multiplier_stages_time}
+%\end{table}
 
 Knowing the latency of each architecture, we can calculate the overall execution time for a specific sample set. MATLAB's sample set consists of $3499$ samples. So, using the following formula, we can calculate each architecture's execution time.
 \begin{small}
@@ -51,7 +61,7 @@ Knowing the latency of each architecture, we can calculate the overall execution
 	\end{split}
 \end{equation}
 \end{small}
-By inserting numbers in the formula above, we get the diagram that is displayed in fig~\ref{fig:exet_time_min_32b}. Clearly, execution time follows the gradient of latency per sample.
+By inserting numbers in the formula above, we get the diagram that is displayed in fig~\ref{fig:exec_time_min_32b}. Clearly, execution time follows the gradient of latency per sample.
 Moving on to the multiplier-less factored CSD architecture, we can start to observe a significant decrease in latency per sample, at first, and then in execution time, as this architecture outputs a new value at least 2 time-units quicker than any multiplier architecture mentioned above. This architecture achieves this speed by using small approximations on the output, which increase overall speed but does not affect much the filter's output.
 
 %\begin{figure}[htpb]
@@ -69,15 +79,32 @@ Moving on to the multiplier-less factored CSD architecture, we can start to obse
 	\label{fig:hdl_latency_min_32b}
 \end{figure}
 
-\begin{figure}[htpb]
+\begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/exec_time_32bits.png}
 	\caption{Execution time for different architectures in seconds.}
-	\label{fig:exet_time_min_32b}
+	\label{fig:exec_time_min_32b}
 \end{figure}
 
-Finally, the distributed arithmetic architecture seems to be the most quick of all above architectures as viewed in figure~\ref{}. Also, this architecture appears to be the most efficient of all since no DSP block is used and LUT utilization is smaller than that of other architectures. However, this comes to a cost which is using approximations as "normal" output. Those approximations produce results that have been approximated more than those produced by the factored CSD architecture.
+One of the many things changing with the reduction of the computation bit width as well as with the different arithmetic is the \verb|SNR| (\textit{Signal-to-Noise Ratio}) of the filter.
+In order to measure the \verb|SNR| of the exported HDL filters, we have to run the simulation in Vivado and capture two outputs, the expected one and the actual one and import them into MATLAB for further analysis.
+Then, filter expected error is calculated by subtracting the expected output from the actual one and by calling the \verb|snr()| function we get the Signal to Noise Ratio to compare different arithmetics and architectures.
+
+Figure~\ref{fig:fir_min_snr} shows SNR values for this filter across multiple arithmetic bit-width and architectures. We can observe that SNR relatively stays the same for both multiplier architectures and multiplier-less CSD with values around $30.2 \hspace{3pt} dB$, with only DA having a very small value of $6.5 \hspace{3pt} dB$.
+This trend is followed for every bit width and is caused by the "bad" filter capabilities of the generated filter. Seeing the magnitude response of it in fig~\ref{fig:min_order_filt}, we can clearly see that even from $0$ Hz, magnitude is already at $-50 \hspace{3pt} dB$ which is not desired. If we were to add the losses of some architectures, as described in section~\ref{sec:filter_comp_subsec:architectural_diff}, those numbers start to appear normal.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../Images/FIR_min_Order/snr_values.png}
+	\caption{SNR values of the minimum coefficient filter}
+	\label{fig:fir_min_snr}
+\end{figure}
+
+Finally, while the distributed arithmetic architecture seems to be the most quick of all above architectures as viewed in figure~\ref{fig:exec_time_min_32b} for a specific arithmetic bit width and appears to be the most efficient of all (since LUT and flip flop utilizations are smaller than that of other architectures), it clearly isn't the correct one. This is the cost of every approximation technique applied by the architecture.
+Those approximations introduce errors that are more significant from those introduced in factored CSD architecture since those errors accumulate throughout the computation stages. Each stage involves a lookup operation and subsequent accumulation of values thus its impact is bigger on overall system accuracy.
 
 \subsection{20 Order filter}
+Moving to a filter which uses more coefficients for filtering, things start to distinguish in the filter architecture field.
+
 
 \subsection{30 Order filter}
